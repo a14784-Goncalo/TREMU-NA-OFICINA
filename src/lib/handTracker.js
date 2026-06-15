@@ -9,7 +9,6 @@ const CAMERA_SETTINGS = {
   facingMode: 'user',
   width: { ideal: 1280 },
   height: { ideal: 960 },
-  aspectRatio: { ideal: 4 / 3 },
   frameRate: { ideal: 30 },
 };
 
