@@ -66,3 +66,36 @@ export function pickRandomWord(history = []) {
   const list = pool.length ? pool : WORDS;
   return list[Math.floor(Math.random() * list.length)];
 }
+
+// Conjunto de palavras válidas (para aceitar qualquer tentativa real, não só as do banco)
+export const VALID_WORDS = new Set(WORDS.map(([w]) => w));
+
+// Avalia uma tentativa (4 letras) contra a palavra secreta, estilo "Termo"/Wordle:
+// 'correct'  -> letra certa, posição certa (verde)
+// 'present'  -> letra existe na palavra, posição errada (amarelo)
+// 'absent'   -> letra não existe na palavra (cinzento)
+export function evaluateGuess(guess, secret) {
+  const result = new Array(guess.length).fill('absent');
+  const secretLetters = secret.split('');
+  const used = new Array(secret.length).fill(false);
+
+  // 1ª passagem: marcar acertos exatos
+  for (let i = 0; i < guess.length; i++) {
+    if (guess[i] === secretLetters[i]) {
+      result[i] = 'correct';
+      used[i] = true;
+    }
+  }
+
+  // 2ª passagem: marcar letras existentes em posição errada
+  for (let i = 0; i < guess.length; i++) {
+    if (result[i] === 'correct') continue;
+    const idx = secretLetters.findIndex((l, j) => l === guess[i] && !used[j]);
+    if (idx !== -1) {
+      result[i] = 'present';
+      used[idx] = true;
+    }
+  }
+
+  return result;
+}

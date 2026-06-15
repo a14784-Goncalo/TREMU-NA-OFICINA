@@ -11,7 +11,7 @@ const HAND_CONNECTIONS = [
   [0,17],
 ];
 
-export default function CameraView({ target, holdFrames, onRecognition, recognised }) {
+export default function CameraView({ holdFrames, onRecognition, recognised, current, wordLen }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
@@ -20,15 +20,14 @@ export default function CameraView({ target, holdFrames, onRecognition, recognis
   if (!filterRef.current) {
     filterRef.current = createStabilityFilter({ holdFrames, minConf: 0.78 });
   }
-  const targetRef = useRef(target);
   const onRecognitionRef = useRef(onRecognition);
   const lastVideoTimeRef = useRef(-1);
   const lastSentRef = useRef(null);
   const [status, setStatus] = useState('A preparar a câmara…');
   const [error, setError] = useState(null);
 
-  useEffect(() => { targetRef.current = target; filterRef.current.clearLock(); }, [target]);
   useEffect(() => { onRecognitionRef.current = onRecognition; }, [onRecognition]);
+  useEffect(() => { filterRef.current.clearLock(); }, [current?.length]);
 
   useEffect(() => {
     let cancelled = false;
@@ -96,7 +95,6 @@ export default function CameraView({ target, holdFrames, onRecognition, recognis
           candidate: filt.candidate,
           committed: filt.committed,
           progress: filt.progress,
-          target: targetRef.current,
         });
       }
       rafRef.current = requestAnimationFrame(loop);
@@ -113,24 +111,24 @@ export default function CameraView({ target, holdFrames, onRecognition, recognis
 
   const progress = recognised?.progress || 0;
   const candidate = recognised?.candidate;
-  const matches = candidate && candidate === target;
+  const position = Math.min((current?.length || 0) + 1, wordLen);
 
   return (
     <div className="cam-wrap">
       <video ref={videoRef} playsInline muted className="cam-video" />
       <canvas ref={canvasRef} className="cam-canvas" />
 
-      {/* Target letter badge */}
+      {/* Position badge */}
       {!status && !error && (
         <div className="cam-target-badge">
-          <span className="cam-badge-label">faz</span>
-          <span className="cam-badge-letter">{target}</span>
+          <span className="cam-badge-label">letra</span>
+          <span className="cam-badge-letter">{position}/{wordLen}</span>
         </div>
       )}
 
       {/* Detected letter badge */}
       {!status && !error && candidate && (
-        <div className={`cam-detected-badge ${matches ? 'match' : ''}`}>
+        <div className={`cam-detected-badge ${progress >= 1 ? 'match' : ''}`}>
           <span className="cam-badge-label">vejo</span>
           <span className="cam-badge-letter">{candidate}</span>
         </div>

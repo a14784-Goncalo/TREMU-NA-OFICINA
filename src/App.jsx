@@ -2,50 +2,87 @@ import React, { useCallback, useRef, useState } from 'react';
 import CameraView from './components/CameraView.jsx';
 import GamePanel from './components/GamePanel.jsx';
 import AlphabetGuide from './components/AlphabetGuide.jsx';
-import { pickRandomWord } from './lib/words.js';
+import { pickRandomWord, evaluateGuess } from './lib/words.js';
 
 const HOLD_FRAMES = 14;
+const WORD_LEN = 4;
+const MAX_ATTEMPTS = 6;
 
 export default function App() {
   const [started, setStarted] = useState(false);
   const [round, setRound] = useState(() => newRound([]));
-  const [letterIndex, setLetterIndex] = useState(0);
+  const [guesses, setGuesses] = useState([]); // [{ letters: ['B','O','L','A'], result: ['correct',...] }]
+  const [current, setCurrent] = useState([]); // letras da tentativa atual, ex: ['B','O']
   const [score, setScore] = useState(0);
   const [solved, setSolved] = useState(0);
+  const [status, setStatus] = useState('playing'); // 'playing' | 'won' | 'lost'
   const [recognised, setRecognised] = useState({ letter: null, confidence: 0, progress: 0 });
   const [showGuide, setShowGuide] = useState(false);
   const historyRef = useRef([]);
 
   function newRound(history) {
     const [word, hint] = pickRandomWord(history);
-    return { word, hint, letters: word.split('') };
+    return { word, hint };
   }
 
-  const advance = useCallback(() => {
-    if (letterIndex + 1 < round.letters.length) {
-      setLetterIndex((i) => i + 1);
-      setScore((s) => s + 10);
-    } else {
-      setScore((s) => s + 25);
-      setSolved((s) => s + 1);
-      historyRef.current = [...historyRef.current, round.word].slice(-20);
-      setRound(newRound(historyRef.current));
-      setLetterIndex(0);
-    }
-  }, [letterIndex, round]);
-
-  const skip = useCallback(() => {
+  const startNewRound = useCallback(() => {
     historyRef.current = [...historyRef.current, round.word].slice(-20);
     setRound(newRound(historyRef.current));
-    setLetterIndex(0);
+    setGuesses([]);
+    setCurrent([]);
+    setStatus('playing');
   }, [round]);
 
-  const target = round.letters[letterIndex];
+  const skip = useCallback(() => {
+    startNewRound();
+  }, [startNewRound]);
+
+  const removeLetter = useCallback(() => {
+    if (status !== 'playing') return;
+    setCurrent((cur) => cur.slice(0, -1));
+  }, [status]);
+
+  const submitGuess = useCallback((finalLetters) => {
+    const guessWord = finalLetters.join('');
+    const result = evaluateGuess(guessWord, round.word);
+    const entry = { letters: finalLetters, result };
+
+    setGuesses((gs) => {
+      const next = [...gs, entry];
+
+      if (guessWord === round.word) {
+        setScore((s) => s + 50);
+        setSolved((s) => s + 1);
+        setStatus('won');
+      } else if (next.length >= MAX_ATTEMPTS) {
+        setStatus('lost');
+      } else {
+        setScore((s) => s + 5);
+      }
+
+      return next;
+    });
+
+    setCurrent([]);
+  }, [round]);
+
+  const addLetter = useCallback((letter) => {
+    if (status !== 'playing') return;
+    setCurrent((cur) => {
+      if (cur.length >= WORD_LEN) return cur;
+      const next = [...cur, letter];
+      if (next.length === WORD_LEN) {
+        // pequeno atraso para o jogador ver a última letra colocada antes de avaliar
+        setTimeout(() => submitGuess(next), 350);
+      }
+      return next;
+    });
+  }, [status, submitGuess]);
 
   const onRecognition = useCallback((info) => {
     setRecognised(info);
-    if (info.committed && info.committed === target) advance();
-  }, [advance, target]);
+    if (info.committed) addLetter(info.committed);
+  }, [addLetter]);
 
   if (!started) {
     return (
@@ -54,27 +91,27 @@ export default function App() {
           <div className="splash-header">
             <span className="splash-eyebrow">LGP.SYS v2.0 — inicializado</span>
             <div className="splash-title">
-              LGP
-              <div className="splash-title-sub">.gestual</div>
+              Termo
+              <div className="splash-title-sub">.LGP</div>
             </div>
           </div>
 
           <p className="splash-desc">
-            Aprende o alfabeto da Língua Gestual Portuguesa jogando — letra a letra, gesto a gesto.
+            O clássico jogo da palavra de 4 letras — mas soletrada à mão, em Língua Gestual Portuguesa.
           </p>
 
           <div className="splash-steps">
             <div className="step-row">
               <span className="step-num">01</span>
-              <span>Aparece uma palavra de 4 letras no ecrã</span>
+              <span>Soletra uma palavra de 4 letras à câmara, gesto a gesto</span>
             </div>
             <div className="step-row">
               <span className="step-num">02</span>
-              <span>Faz o gesto de cada letra à câmara</span>
+              <span>Mantém cada gesto firme até a letra ser aceite</span>
             </div>
             <div className="step-row">
               <span className="step-num">03</span>
-              <span>Mantém o gesto firme até a tecla acender</span>
+              <span>Verde = certo no lugar certo. Amarelo = existe mas no lugar errado. Cinzento = não existe</span>
             </div>
           </div>
 
@@ -122,8 +159,8 @@ export default function App() {
           {solved === 0 && <span className="hud-streak-empty">0 words</span>}
         </div>
 
-        {/* Skip */}
-        <button className="hud-btn" onClick={skip} title="Saltar palavra">
+        {/* Skip / Nova palavra */}
+        <button className="hud-btn" onClick={skip} title="Nova palavra">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="5 4 15 12 5 20 5 4"/>
             <line x1="19" y1="5" x2="19" y2="19"/>
@@ -132,17 +169,24 @@ export default function App() {
       </div>
 
       <CameraView
-        target={target}
         holdFrames={HOLD_FRAMES}
         onRecognition={onRecognition}
         recognised={recognised}
+        current={current}
+        wordLen={WORD_LEN}
       />
 
       <GamePanel
         word={round.word}
         hint={round.hint}
-        letterIndex={letterIndex}
+        guesses={guesses}
+        current={current}
         recognised={recognised}
+        status={status}
+        wordLen={WORD_LEN}
+        maxAttempts={MAX_ATTEMPTS}
+        onNext={startNewRound}
+        onDelete={removeLetter}
       />
 
       {showGuide && <AlphabetGuide onClose={() => setShowGuide(false)} />}
