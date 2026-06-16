@@ -19,6 +19,7 @@ export default function App() {
   const [recognised, setRecognised] = useState({ letter: null, confidence: 0, progress: 0 });
   const [showGuide, setShowGuide] = useState(false);
   const historyRef = useRef([]);
+  const submittingRef = useRef(false);
 
   function newRound(history) {
     const [word, hint] = pickRandomWord(history);
@@ -27,6 +28,7 @@ export default function App() {
 
   const startNewRound = useCallback(() => {
     historyRef.current = [...historyRef.current, round.word].slice(-20);
+    submittingRef.current = false;
     setRound(newRound(historyRef.current));
     setGuesses([]);
     setCurrent([]);
@@ -43,6 +45,9 @@ export default function App() {
   }, [status]);
 
   const submitGuess = useCallback((finalLetters) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+
     const guessWord = finalLetters.join('');
     const result = evaluateGuess(guessWord, round.word);
     const entry = { letters: finalLetters, result };
@@ -64,6 +69,7 @@ export default function App() {
     });
 
     setCurrent([]);
+    submittingRef.current = false;
   }, [round]);
 
   const addLetter = useCallback((letter) => {
