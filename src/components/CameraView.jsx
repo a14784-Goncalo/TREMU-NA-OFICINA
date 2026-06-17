@@ -27,7 +27,6 @@ export default function CameraView({ holdFrames, onRecognition, recognised, curr
   const [error, setError] = useState(null);
 
   useEffect(() => { onRecognitionRef.current = onRecognition; }, [onRecognition]);
-  useEffect(() => { filterRef.current.clearLock(); }, [current?.length]);
 
   useEffect(() => {
     let cancelled = false;

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CameraView from './components/CameraView.jsx';
 import GamePanel from './components/GamePanel.jsx';
 import AlphabetGuide from './components/AlphabetGuide.jsx';
@@ -69,21 +69,32 @@ export default function App() {
     });
 
     setCurrent([]);
-    submittingRef.current = false;
   }, [round]);
 
   const addLetter = useCallback((letter) => {
     if (status !== 'playing') return;
     setCurrent((cur) => {
       if (cur.length >= WORD_LEN) return cur;
-      const next = [...cur, letter];
-      if (next.length === WORD_LEN) {
-        // pequeno atraso para o jogador ver a última letra colocada antes de avaliar
-        setTimeout(() => submitGuess(next), 350);
-      }
-      return next;
+      return [...cur, letter];
     });
-  }, [status, submitGuess]);
+  }, [status]);
+
+  // Dispara a avaliação da tentativa quando a palavra fica completa.
+  // Importante: isto corre num efeito (não dentro do updater do setCurrent),
+  // porque em React.StrictMode (modo de desenvolvimento) a função passada à
+  // forma de atualização do setState é invocada DUAS vezes de propósito para
+  // detetar efeitos secundários impuros. Um setTimeout dentro do updater era
+  // por isso agendado duas vezes, e ambas as chamadas a submitGuess() acabavam
+  // por correr — daí a palavra aparecer repetida na lista de tentativas. Um
+  // efeito com cleanup (que cancela o timeout anterior) não tem este problema.
+  useEffect(() => {
+    if (status !== 'playing' || current.length !== WORD_LEN) return;
+    const id = setTimeout(() => {
+      submittingRef.current = false;
+      submitGuess(current);
+    }, 350);
+    return () => clearTimeout(id);
+  }, [current, status, submitGuess]);
 
   const onRecognition = useCallback((info) => {
     setRecognised(info);

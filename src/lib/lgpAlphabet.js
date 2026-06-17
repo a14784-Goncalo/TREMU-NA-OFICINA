@@ -267,6 +267,11 @@ export function createStabilityFilter({ holdFrames = 12, minConf = 0.75 } = {}) 
       if (!letter || confidence < minConf) {
         last = null;
         count = 0;
+        // Liberta o "lock" quando a mão deixa de mostrar o gesto com confiança.
+        // Isto permite repetir a mesma letra na tentativa seguinte (ex: duas
+        // letras iguais seguidas) só depois de a mão sair de facto da posição,
+        // em vez de depender de um reset externo disparado a meio do gesto.
+        locked = null;
         return { committed: null, candidate: letter, progress: 0 };
       }
       if (letter === last) count++;
