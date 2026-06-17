@@ -17,7 +17,7 @@ APIs externas a serem chamadas durante o jogo.
 
 ## Letras suportadas
 
-Apenas sinais **estáticos** a uma mão: `A B C D F I L O U V W Y`.
+Apenas sinais **estáticos** a uma mão: `A B C D E F G H I K L M N O P Q R S T U V W X Y`.
 Letras com movimento (J, Z) ficam fora desta versão.
 
 ## Banco de palavras

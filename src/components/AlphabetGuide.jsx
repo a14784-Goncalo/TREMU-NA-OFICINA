@@ -5,13 +5,25 @@ const SUPPORTED_SIGNS = [
   ['B', 'Quatro dedos unidos para cima, polegar dobrado sobre a palma.'],
   ['C', 'Mão curvada em forma de C, dedos e polegar arqueados.'],
   ['D', 'Indicador para cima, polegar toca nos restantes dedos dobrados.'],
+  ['E', 'Indicador, médio e anelar dobrados com as pontas a tocar no polegar; mindinho dobrado.'],
   ['F', 'Polegar e indicador em círculo; médio, anelar e mindinho esticados.'],
+  ['G', 'Indicador apontado na horizontal, polegar paralelo por baixo; restantes dedos fechados.'],
+  ['H', 'Indicador e médio juntos, apontados na horizontal.'],
   ['I', 'Punho fechado com o mindinho esticado para cima.'],
+  ['K', 'Indicador esticado para cima, médio dobrado a meio, polegar entre os dois.'],
   ['L', 'Polegar e indicador formam um L; restantes dedos fechados.'],
+  ['M', 'Indicador, médio e anelar dobrados sobre o polegar; mindinho fechado.'],
+  ['N', 'Indicador e médio dobrados sobre o polegar; anelar e mindinho fechados.'],
   ['O', 'Todos os dedos curvados a tocar no polegar, criando um O.'],
+  ['P', 'Indicador a apontar para baixo, polegar afastado da palma; médio também para baixo; anelar e mindinho fechados.'],
+  ['Q', 'Polegar e indicador a apontar para baixo, lado a lado (como um G invertido).'],
+  ['R', 'Indicador e médio cruzados, esticados para cima.'],
+  ['S', 'Punho fechado, polegar sobre os dedos dobrados.'],
+  ['T', 'Polegar entre o indicador e o médio, ambos dobrados; punho fechado.'],
   ['U', 'Indicador e médio juntos e esticados para cima.'],
   ['V', 'Indicador e médio esticados em V afastados.'],
   ['W', 'Indicador, médio e anelar para cima; polegar segura o mindinho.'],
+  ['X', 'Indicador dobrado em gancho; restantes dedos fechados.'],
   ['Y', 'Polegar e mindinho esticados; restantes dedos dobrados.'],
 ];
 
@@ -37,6 +49,9 @@ export default function AlphabetGuide({ onClose }) {
 
         <div className="guide-note">
           Os gestos são detetados automaticamente pela câmara. Mantém a mão dentro do ecrã e bem iluminada.
+        </div>
+        <div className="guide-note">
+          J e Z não são suportados nesta versão: exigem movimento (J desenha um gancho, Z desenha a letra no ar) e o reconhecimento aqui só avalia poses estáticas.
         </div>
 
         <div className="guide-grid">

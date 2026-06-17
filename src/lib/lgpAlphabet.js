@@ -180,7 +180,7 @@ function scoreLetter(letter, lm, ext, angles, ratio) {
         !ext.index && !ext.middle && !ext.ring && !ext.pinky ? 1 : 0,
         below(ratio, 0.5, 0.2),
         below(angles.thumb, 120, 30),
-        below(dist(lm[LM.INDEX_TIP], lm[LM.THUMB_TIP]) / p, 0.4, 0.25),
+        below(dist(lm[LM.INDEX_TIP], lm[LM.THUMB_TIP]) / p, 0.32, 0.18),
       ];
     // N: indicador e médio dobrados sobre o polegar; anelar e mindinho fechados
     case 'N':
@@ -188,7 +188,7 @@ function scoreLetter(letter, lm, ext, angles, ratio) {
         !ext.index && !ext.middle && !ext.ring && !ext.pinky ? 1 : 0,
         below(ratio, 0.5, 0.2),
         below(angles.thumb, 130, 30),
-        above(dist(lm[LM.INDEX_TIP], lm[LM.THUMB_TIP]) / p, 0.3, 0.2),
+        above(dist(lm[LM.INDEX_TIP], lm[LM.THUMB_TIP]) / p, 0.38, 0.18),
       ];
     // P: indicador aponta para baixo, polegar para fora; médio para baixo; anelar e mindinho fechados
     case 'P':
