@@ -215,13 +215,14 @@ function scoreLetter(letter, lm, ext, angles, ratio) {
         below(indexMiddleD, 0.6, 0.25),
         lm[LM.INDEX_TIP].x > lm[LM.MIDDLE_TIP].x ? 0.5 : 1, // cruzados
       ];
-    // S: punho fechado, polegar sobre os dedos dobrados
+    // S: punho fechado, polegar sobre os dedos dobrados (esticado, não dobrado para dentro como no N)
     case 'S':
       return [
         !ext.index && !ext.middle && !ext.ring && !ext.pinky ? 1 : 0,
         below(ratio, 0.5, 0.2),
         above(thumbMiddleD, 0.35, 0.2),
         below(thumbMiddleD, 0.7, 0.2),
+        above(angles.thumb, 135, 25),
       ];
     // T: polegar entre indicador e médio dobrados; punho fechado
     case 'T':
