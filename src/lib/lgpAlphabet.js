@@ -171,8 +171,10 @@ function scoreLetter(letter, lm, ext, angles, ratio) {
     case 'K':
       return [
         ext.index && !ext.ring && !ext.pinky ? 1 : 0,
-        above(angles.middle, 100, 40) && angles.middle < 160 ? 1 : 0,
+        above(angles.middle, 115, 30) && angles.middle < 160 ? 1 : 0,
         above(thumbOutFromPalm, 0.6, 0.3),
+        // polegar fica encostado entre o indicador e o médio — não esticado para o lado como no L
+        below(thumbMiddleD, 0.55, 0.3),
       ];
     // M: três dedos (indicador, médio, anelar) dobrados sobre o polegar; mindinho fechado
     case 'M':
