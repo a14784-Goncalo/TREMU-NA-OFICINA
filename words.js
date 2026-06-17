@@ -51,7 +51,7 @@ export default function AlphabetGuide({ onClose }) {
           Os gestos são detetados automaticamente pela câmara. Mantém a mão dentro do ecrã e bem iluminada.
         </div>
         <div className="guide-note">
-          J e Z não são suportados nesta versão: exigem movimento (J desenha um gancho, Z desenha a letra no ar) e o reconhecimento aqui só avalia poses estáticas.
+          J e Z não são suportados nesta versão: exigem movimento (J desenha um gancho, Z desenha a letra no ar) e o reconhecimento aqui só avalia poses estáticas. Cuidado com letras como o N que são precisas luz a volta e boa realização.
         </div>
 
         <div className="guide-grid">
