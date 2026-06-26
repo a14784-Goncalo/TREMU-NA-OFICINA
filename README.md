@@ -8,29 +8,13 @@ APIs externas a serem chamadas durante o jogo.
 
 ## Como funciona
 
-1. O modelo de mãos da MediaPipe (`hand_landmarker.task`) corre via WebAssembly
+O modelo de mãos da MediaPipe (`hand_landmarker.task`) corre via WebAssembly
    no browser e devolve 21 pontos de referência da mão por *frame*.
-2. Um classificador geométrico próprio (`src/lib/lgpAlphabet.js`) avalia
+Um classificador geométrico próprio (`src/lib/lgpAlphabet.js`) avalia
    ângulos das articulações e distâncias relativas para identificar a letra.
-3. A letra fica "presa" quando se mantém o gesto durante ~14 *frames* — só
+A letra fica "presa" quando se mantém o gesto durante ~14 *frames* — só
    aí avança no jogo, para evitar falsos positivos.
 
-## Letras suportadas
-
-Apenas sinais **estáticos** a uma mão: `A B C D E F G H I K L M N O P Q R S T U V W X Y`.
-Letras com movimento (J, Z) ficam fora desta versão.
-
-## Banco de palavras
-
-Está em [`src/lib/words.js`](src/lib/words.js). São ~25 palavras pt-PT de
-quatro letras, todas formadas apenas pelas letras suportadas acima.
-
-## Como correr
-
-```bash
-npm install
-npm run dev
-```
 
 Os scripts `predev` / `prebuild` descarregam automaticamente:
 
@@ -67,8 +51,6 @@ src/
     handTracker.js        carrega o HandLandmarker e gere a câmara
     lgpAlphabet.js        classificador geométrico + filtro de estabilidade
     words.js              banco de palavras + amostragem
-scripts/
-  download-model.js       descarrega modelo + copia WASM para /public
 ```
 
 ## Notas
