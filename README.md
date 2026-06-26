@@ -1,62 +1,59 @@
 # TREMU NA OFICINA
 
-Jogo de inclusão social em **React + JavaScript** que ensina e treina o
-alfabeto manual da **Língua Gestual Portuguesa (LGP)**. O utilizador vê uma
-palavra de quatro letras e tem de a soletrar com a mão à frente da câmara.
-O reconhecimento corre **inteiramente no navegador** — não há servidores nem
-APIs externas a serem chamadas durante o jogo.
+O **Tremu na Oficina** é um jogo educativo desenvolvido em **React** e **JavaScript**, criado para incentivar a aprendizagem da **Língua Gestual Portuguesa (LGP)** de forma prática e interativa.
 
-## Como funciona
+O desafio consiste em apresentar ao utilizador uma sequência de palavras que devem ser soletradas através do alfabeto manual da LGP. À medida que cada gesto é reconhecido, o jogo avança automaticamente para a letra seguinte, permitindo ao jogador acompanhar o seu progresso em tempo real.
 
-O modelo de mãos da MediaPipe (`hand_landmarker.task`) corre via WebAssembly
-   no browser e devolve 21 pontos de referência da mão por *frame*.
-Um classificador geométrico próprio (`src/lib/lgpAlphabet.js`) avalia
-   ângulos das articulações e distâncias relativas para identificar a letra.
-A letra fica "presa" quando se mantém o gesto durante ~14 *frames* — só
-   aí avança no jogo, para evitar falsos positivos.
+## Objetivo
 
+O principal objetivo da aplicação é proporcionar uma experiência de aprendizagem acessível e dinâmica, permitindo que qualquer pessoa pratique o alfabeto gestual diretamente no navegador, sem necessidade de instalar software adicional.
 
-Os scripts `predev` / `prebuild` descarregam automaticamente:
+## Execução
 
-- o modelo MediaPipe `hand_landmarker.task` para `public/models/` (≈7 MB,
-  descarregado uma única vez);
-- a *runtime* WASM da `@mediapipe/tasks-vision` para `public/wasm/`.
+Para iniciar a aplicação em ambiente de desenvolvimento:
 
-Depois do primeiro arranque, **a aplicação funciona offline**.
+```bash
+npm install
+npm run dev
+```
 
-Abrir [http://127.0.0.1:5173](http://127.0.0.1:5173) e autorizar o acesso à
-câmara.
-
-## Build de produção
+Para criar a versão de produção:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-A pasta `dist/` resultante pode ser servida por qualquer *static host*.
+A versão final fica disponível na pasta `dist/`, pronta para ser publicada em qualquer servidor de páginas estáticas.
 
-## Estrutura
+## Estrutura do projeto
 
 ```
 src/
-  App.jsx                 estado global do jogo
-  main.jsx                bootstrap React
-  styles.css              tema escuro acessível
+  App.jsx
+  main.jsx
+  styles.css
+
   components/
-    CameraView.jsx        câmara + canvas + loop de inferência
-    GamePanel.jsx         palavra-alvo, pontuação, progresso
-    AlphabetGuide.jsx     modal com descrição das letras
+    CameraView.jsx
+    GamePanel.jsx
+    AlphabetGuide.jsx
+
   lib/
-    handTracker.js        carrega o HandLandmarker e gere a câmara
-    lgpAlphabet.js        classificador geométrico + filtro de estabilidade
-    words.js              banco de palavras + amostragem
+    handTracker.js
+    lgpAlphabet.js
+    words.js
 ```
 
-## Notas
+## Características
 
-- O reconhecimento é heurístico (sem treino de ML adicional). Funciona para
-  utilizadores principiantes que façam os sinais de forma clara, com luz
-  razoável e fundo neutro.
-- O sistema é deliberadamente *stand-alone*: nenhum estado do utilizador é
-  enviado para fora do dispositivo.
+* Interface simples e intuitiva.
+* Prática do alfabeto manual da LGP através de desafios.
+* Sistema de pontuação e acompanhamento do progresso.
+* Execução totalmente no navegador.
+* Não é necessário criar conta nem fornecer dados pessoais.
+* Projeto desenvolvido com foco na acessibilidade e inclusão social.
+
+## Observações
+
+A aplicação foi concebida como uma ferramenta de apoio à aprendizagem da Língua Gestual Portuguesa, oferecendo uma forma interativa de praticar o alfabeto manual. O desempenho pode variar consoante a qualidade da imagem captada pela câmara e as condições de iluminação do ambiente.
